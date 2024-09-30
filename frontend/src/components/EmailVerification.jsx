@@ -2,12 +2,14 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 const EmailVerification = () => {
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const inputRefs = useRef([]);
     const navigate = useNavigate();
-    const isLoading = false;
+    const { verifyEmail, error, isLoading } = useAuthStore();
 
     const handleChange = (index, value) => {
         const newCode = [...code];
@@ -17,17 +19,17 @@ const EmailVerification = () => {
         }
 
         // Handle pasted content
-        if(value.length > 1) {
+        if (value.length > 1) {
             const pastedCode = value.slice(0, 6).split("");
             for (let i = 0; i < 6; i++) {
-                newCode[i] = pastedCode[i] || ""; 
+                newCode[i] = pastedCode[i] || "";
             }
             setCode(newCode);
 
             // Focus on the last non-empty input or the first empty input one
             const lastFilledIndex = newCode.findLastIndex((digit) => digit !== "");
             const focusIndex = lastFilledIndex < 5 ? lastFilledIndex + 1 : 5;
-            inputRefs.current[focusIndex].focus(); 
+            inputRefs.current[focusIndex].focus();
         } else {
             if (index < 6) {
                 newCode[index] = value;
@@ -55,15 +57,24 @@ const EmailVerification = () => {
         }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const verificationCode = code.join("");
         console.log(`verification code submitted : ${verificationCode}`);
+        try {
+            const response = await verifyEmail(verificationCode);
+            console.log(response);
+            navigate("/");
+            toast.success("Email verified successfully");
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     // Auto submit when user enters all 6 digits
     useEffect(() => {
-        if(code.every(digit => digit !== "")){
+        if (code.every(digit => digit !== "")) {
             handleSubmit(new Event("submit"));
         }
     }, [code])
@@ -98,6 +109,7 @@ const EmailVerification = () => {
                     ))}
                 </div>
             </form>
+            {error && <p className='text-red-500 text-2xl font-semibold mb-4'>{error}</p>}
             <motion.button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-lg shadow-lg text-white font-bold hover:bg-gradient-to-r hover:from-green-600 hover:to-emerald-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 " whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 type='submit'
