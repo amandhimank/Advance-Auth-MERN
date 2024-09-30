@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 const Dashboard = () => {
   return (
     <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
+      initial={{ opacity: 0, y:-100 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
         type: "spring",
         stiffness: 260,
