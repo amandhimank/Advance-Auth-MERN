@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 app.use(cors({
-    origin: "http://localhost:5173", // Change this to your frontend's origin
+    origin: "https://advance-auth-mern-1.onrender.com", // Change this to your frontend's origin
     credentials: true // Allow cookies to be sent
 }));
 

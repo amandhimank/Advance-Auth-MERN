@@ -2,7 +2,7 @@ import { create } from 'zustand';  // zustand => state management library
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
-const API_URL = "http://localhost:3000/auth";
+const API_URL = "https://advance-auth-mern-1.onrender.com/auth";
 
 export const useAuthStore = create((set) => ({
     user: null,
