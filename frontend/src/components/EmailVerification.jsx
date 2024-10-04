@@ -62,10 +62,9 @@ const EmailVerification = () => {
         const verificationCode = code.join("");
         console.log(`verification code submitted : ${verificationCode}`);
         try {
-            const response = await verifyEmail(verificationCode);
-            console.log(response);
-            navigate("/");
+            await verifyEmail(verificationCode);
             toast.success("Email verified successfully");
+            navigate("/");
         }
         catch (err) {
             console.log(err);
@@ -74,7 +73,7 @@ const EmailVerification = () => {
 
     // Auto submit when user enters all 6 digits
     useEffect(() => {
-        if (code.every(digit => digit !== "")) {
+        if (code.every((digit) => digit !== "")) {
             handleSubmit(new Event("submit"));
         }
     }, [code])

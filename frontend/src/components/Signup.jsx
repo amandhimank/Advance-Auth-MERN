@@ -18,8 +18,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await signup(email, password, name);
-      console.log(response);
+      await signup(email, password, name);
       navigate("/verify-email");
       toast.success("Verification code sent successfully");
     }

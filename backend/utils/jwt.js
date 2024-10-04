@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 
 const jwtTokenAuthentication = (req, res, next) => {
+    // const token = req.headers["authorization"].split(" ")[1];
     const token = req.cookies.token;
-    console.log(token);
+    console.log("token", token);
     if(!token) {
         return res.status(403).json({ message: "Token not found", success: false });
     }
@@ -10,6 +11,7 @@ const jwtTokenAuthentication = (req, res, next) => {
     try {
         // verify the jwt token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decoded);
         if(!decoded) {
             return res.status(401).json({ message: "Invalid or expired token", success: false });
         }
@@ -18,19 +20,19 @@ const jwtTokenAuthentication = (req, res, next) => {
     }
     catch(err) {
         console.log("Error in verifying JWT token");
-        res.status(500).json({ message: "Internal Server Error", success: false });
+        next(err);
     }
 }
 
 const generateJwtTokenAndSetCookie = (res, payload) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-    // set a cookie
+    // return token
     res.cookie("token", token, {
-        httpOnly: true, // prevents XSS attacks
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict", // prevents Cross Site Request Forgery(CSRF) Attack
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+        sameSite: "strict",
+        path: "/",
+        expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    })
     return token;
 }
 

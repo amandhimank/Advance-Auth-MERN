@@ -10,7 +10,7 @@ const signup = async (req, res) => {
     try {
         const user = await User.findOne({email: email});
         if(user) {
-            return res.status(403).json({message: "Email already exists", success: false});
+            return res.status(403).json({message: "User already exists", success: false});
         }
 
         const verificationToken = generateVerificationToken();
@@ -36,15 +36,16 @@ const signup = async (req, res) => {
         const token = generateJwtTokenAndSetCookie(res, payload);
 
         await sendVerificationEmail(response.email, response.verificationToken);
-
-        res.status(201).json({message: "User created successfully", success: true, token: token, user: {
+        
+        // returning token also in the response so that user can store it in its local storage
+        return res.status(200).json({message: "User created successfully", success: true, token: token, user: {
             ...response._doc,
             password: undefined
         }});
     }
     catch(err) {
         console.log(err);
-        res.status(500).json({error: "Internal Server Error", success: false});
+        return res.status(500).json({error: "Internal Server Error", success: false});
     }
 };
 
@@ -67,7 +68,7 @@ const login = async (req, res) => {
         user.lastLogin = Date.now();
         await user.save();
 
-        res.status(200).json({success: true, user: user, token: token, message: "User successfully loggedin",});
+        return res.status(200).json({success: true, user: user, token: token, message: "User successfully loggedin",});
 
     }
     catch(err) {
@@ -75,11 +76,6 @@ const login = async (req, res) => {
         res.status(500).json({error: "Internal Server Error", success: false});
     }
 };
-
-const logout = async (req, res) => {
-    res.clearCookie("token");
-    res.status(200).json({success: true, message: "Successfully logged out"});
-}
 
 const verifyEmail = async (req, res) => {
     // user will enter the verification code in the ui
@@ -103,11 +99,11 @@ const verifyEmail = async (req, res) => {
         user.verificationTokenExpiresAt = undefined;
         await user.save();
         await sendWelcomeEmail(user.email, user.name);
-        res.status(200).json({message: "Email verified successfully", success: true});
+        return res.status(200).json({message: "Email verified successfully", user, success: true});
     }
     catch(err) {
         console.log("error in verifying email:", err);
-        res.status(500).json({error: "Internal Server Error", success: false});
+        return res.status(500).json({error: "Internal Server Error", success: false});
     }
 };
 
@@ -154,11 +150,11 @@ const resetPassword = async (req, res) => {
 
         await sendResetSuccessEmail(email);
         console.log("password updated successfully");
-        res.status(200).json({ message: "Password reset successfully", success: true });
+        return res.status(200).json({ message: "Password reset successfully", success: true });
     }
     catch(err) {
         console.log(err);
-        res.status(500).json({error: "Internal Server Error", success: false});
+        return res.status(500).json({error: "Internal Server Error", success: false});
     }
 }
 
@@ -170,12 +166,18 @@ const checkAuth = async (req, res) => {
             res.status(404).json({ message: "User not found", success: false });
         }
         console.log("user authenticated");
-        res.status(200).json({ success: true, user });
+        console.log(user);
+        return res.status(200).json({ success: true, user });
     }
     catch(err) {
         console.log(err);
-        res.status(500).json({error: "Internal Server Error", success: false});
+        return res.status(500).json({error: "Internal Server Error", success: false});
     }
 }
 
-module.exports = { signup, login, logout, verifyEmail, forgotPassword, resetPassword, checkAuth };
+const logout = async (req, res) => {
+    res.clearCookie("token");
+    return res.status(200).json({message: "User logged out successfully", success: true});
+}
+
+module.exports = { signup, login, verifyEmail, forgotPassword, resetPassword, checkAuth, logout };
