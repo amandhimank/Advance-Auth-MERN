@@ -135,10 +135,10 @@ const forgotPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-    const { email, password } = req.body;
+    const { password } = req.body;
     const { token } = req.params;
     try{
-        const user = await User.findOne({ email: email, resetPasswordToken: token, resetPasswordExipresAt: { $gt: Date.now() } }); 
+        const user = await User.findOne({ resetPasswordToken: token, resetPasswordExipresAt: { $gt: Date.now() } }); 
         if(!user) {
             return res.status(403).json({ message: "Invalid or expired reset token", success: false });
         }
@@ -148,7 +148,7 @@ const resetPassword = async (req, res) => {
         user.resetPasswordExipresAt = undefined;
         await user.save();
 
-        await sendResetSuccessEmail(email);
+        await sendResetSuccessEmail(user.email);
         console.log("password updated successfully");
         return res.status(200).json({ message: "Password reset successfully", success: true });
     }

@@ -16,6 +16,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         await forgotPassword(email);
         setIsSubmitted(true);
+        toast.success("password reset email sent successfully");
     }
 
     return (
