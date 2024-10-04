@@ -14,13 +14,10 @@ import ResetPassword from './components/ResetPassword'
 // protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
-  console.log(user);
   if(!isAuthenticated) {
-    console.log("not authenticated");
     return <Navigate to="/login" replace />
   }
   if(!user.isVerified) {
-    console.log("not verified");
     return <Navigate to="/verify-email" replace />
   }
 
@@ -75,6 +72,8 @@ function App() {
             <ResetPassword />
           </RedirectAuthenticatedUser>
         } />
+        {/* catch all routes */}
+        <Route path='*' element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
     </div>

@@ -80,14 +80,11 @@ const login = async (req, res) => {
 const verifyEmail = async (req, res) => {
     // user will enter the verification code in the ui
     const { verificationCode } = req.body;
-    console.log(verificationCode);
     try {
         const user = await User.findOne({
             verificationToken: verificationCode, 
             verificationTokenExpiresAt: { $gt: Date.now() }  // this checks token is expired or not
         });
-
-        console.log(user);
 
         if(!user) {
             return res.status(403).json({message: "Invalid or expired verification code", success: false});
@@ -149,7 +146,6 @@ const resetPassword = async (req, res) => {
         await user.save();
 
         await sendResetSuccessEmail(user.email);
-        console.log("password updated successfully");
         return res.status(200).json({ message: "Password reset successfully", success: true });
     }
     catch(err) {
@@ -165,8 +161,6 @@ const checkAuth = async (req, res) => {
         if(!user) {
             res.status(404).json({ message: "User not found", success: false });
         }
-        console.log("user authenticated");
-        console.log(user);
         return res.status(200).json({ success: true, user });
     }
     catch(err) {

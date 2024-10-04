@@ -20,7 +20,6 @@ export const useAuthStore = create((set) => ({
                 password,
                 name
             }, { withCredentials: true });
-            console.log(response);
             localStorage.setItem("token", response.data.token);
             set({ user: response.data.user, isAuthenticated: true, isLoading: false});
         }
@@ -37,7 +36,6 @@ export const useAuthStore = create((set) => ({
                 email,
                 password
             }, { withCredentials: true });
-            console.log(response);
             localStorage.setItem("token", response.data.token);
             set({ isAuthenticated: true, user: response.data.user, error: null, isLoading: false });
         }
@@ -53,7 +51,6 @@ export const useAuthStore = create((set) => ({
             localStorage.removeItem("token");
             set({ user: null, isLoading: false, isAuthenticated: false, error: null });
             const response = await axios.post(API_URL + "/logout", { withCredentials: true });
-            console.log(response);
             return { message: "Successfully logged out" }
         }
         catch(err) {
@@ -68,7 +65,6 @@ export const useAuthStore = create((set) => ({
             const response = await axios.post(API_URL + "/verify-email", {
                 verificationCode
             })
-            console.log(response);
             set({ user: response.data.user, isAuthenticated: true, isLoading: false })
             return response.data;
         }
@@ -85,7 +81,6 @@ export const useAuthStore = create((set) => ({
         try {
             const response = await axios.get(API_URL + "/check-auth", { withCredentials: true });
             set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false });
-            console.log(response);
         }
         catch (err) {
             set({ error: null, isCheckingAuth: false, isAuthenticated: false });
