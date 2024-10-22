@@ -4,7 +4,6 @@ const generateVerificationToken = require('../utils/generateVerificationToken');
 const { generateJwtTokenAndSetCookie } = require('../utils/jwt');
 const { sentOtpToEmail, sendWelcomeEmail, sendResetEmail, sendResetSuccessEmail } = require("../mailtrap/mailtrap.config");
 
-const CLIENT_URL = "http://localhost:5173"
 
 const signup = async (req, res) => {
     const { email, password, name } = req.body;
@@ -123,7 +122,7 @@ const forgotPassword = async (req, res) => {
         await user.save();
 
         // send email
-        const resetUrl = `${CLIENT_URL}/reset-password/${resetToken}`;
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
         await sendResetEmail(email, resetUrl);
         res.status(200).json({message: "Reset password email sent successfully", success: true});
     }
