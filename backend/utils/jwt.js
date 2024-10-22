@@ -27,7 +27,7 @@ const generateJwtTokenAndSetCookie = (res, payload) => {
         sameSite: "strict",
         path: "/",
         expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-        httpOnly: true
+        httpOnly: true,
     })
     return token;
 }
