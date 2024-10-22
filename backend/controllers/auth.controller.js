@@ -2,7 +2,7 @@ const User = require("../models/user.model");
 const crypto = require('crypto');
 const generateVerificationToken = require('../utils/generateVerificationToken');
 const { generateJwtTokenAndSetCookie } = require('../utils/jwt');
-const { sentOtpToEmail, sendWelcomeEmail, sendResetEmail, sendResetSuccessEmail } = require("../mailtrap/mailtrap.config");
+const { sendVerificationEmail, sendWelcomeEmail, sendResetEmail, sendResetSuccessEmail } = require('../mailtrap/emails');
 
 
 const signup = async (req, res) => {
@@ -35,8 +35,7 @@ const signup = async (req, res) => {
         
         const token = generateJwtTokenAndSetCookie(res, payload);
 
-        // await sendVerificationEmail(response.email, response.verificationToken);
-        await sentOtpToEmail(response.email, response.verificationToken);
+        await sendVerificationEmail(response.email, response.verificationToken);
         
         // returning token also in the response so that user can store it in its local storage
         return res.status(200).json({message: "User created successfully", success: true, token: token, user: {
